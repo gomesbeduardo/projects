@@ -1,5 +1,6 @@
+import re
+
 class ContactAgenda:
-    
     """
     A class to manage a contact agenda.
 
@@ -19,7 +20,7 @@ class ContactAgenda:
         edit_contact(contact_id, new_name=None, new_number=None, new_email=None): Edit an existing contact.
         display_favorite_contacts(): Display only favorite contacts.
     """
-    
+
     def __init__(self):
         """
         Initialize the ContactAgenda with an empty contacts dictionary, an empty set for favorite contacts,
@@ -28,8 +29,6 @@ class ContactAgenda:
         self.contacts = {}
         self.favorite_contacts = set()
         self.next_id = 1
-
-
 
     def add_contact(self, name, number, email):
         """
@@ -48,6 +47,10 @@ class ContactAgenda:
             print("Contato já existe com esse número!")
             return
 
+        if not self.validar_email(email):
+            print("E-mail inválido!")
+            return
+
         contact = {
             'id': self.next_id,
             'name': name,
@@ -58,7 +61,6 @@ class ContactAgenda:
         self.contacts[self.next_id] = contact
         self.next_id += 1
         print(f"Contato {name} adicionado com sucesso!")
-
 
     def remove_contact(self, contact_id):
         """
@@ -72,8 +74,8 @@ class ContactAgenda:
             return
 
         del self.contacts[contact_id]
+        self.favorite_contacts.discard(contact_id)
         print(f"Contato com ID {contact_id} removido")
-
 
     def favorite_contact(self, contact_id):
         """
@@ -90,7 +92,6 @@ class ContactAgenda:
         self.favorite_contacts.add(contact_id)
         print(f"Contato com ID {contact_id} favoritado")
 
-
     def unfavorite_contact(self, contact_id):
         """
         Remove favorite status from a contact.
@@ -106,7 +107,6 @@ class ContactAgenda:
         self.favorite_contacts.discard(contact_id)
         print(f"Contato com ID {contact_id} desfavoritado")
 
-
     def get_contacts(self):
         """
         Get the dictionary of all contacts.
@@ -117,15 +117,12 @@ class ContactAgenda:
         """
         return self.contacts
 
-
     def display_contacts(self):
         """Display all contacts sorted by their IDs."""
         sorted_contacts = sorted(self.contacts.items(), key=lambda item: item[0])
         for contact_id, contact in sorted_contacts:
             star = '★' if contact_id in self.favorite_contacts else ''
             print(f"{contact_id}. {star} {contact['name']}: {contact['number']} - {contact['email']}")
-
-
 
     def edit_contact(self, contact_id, new_name=None, new_number=None, new_email=None):
         """
@@ -145,6 +142,10 @@ class ContactAgenda:
             print("Já existe um contato com esse novo número!")
             return
 
+        if new_email and not self.validar_email(new_email):
+            print("E-mail inválido!")
+            return
+
         if new_name:
             self.contacts[contact_id]['name'] = new_name
 
@@ -156,20 +157,30 @@ class ContactAgenda:
 
         print(f"Contato com ID {contact_id} editado com sucesso!")
 
-
     def display_favorite_contacts(self):
         """Display only favorite contacts."""
         star = '★'
-        sorted_contacts = sorted(self.contacts.items(), key=lambda item:item[0])
+        sorted_contacts = sorted(self.contacts.items(), key=lambda item: item[0])
         for contact_id, contact in sorted_contacts:
-            star = '★' 
             if contact_id in self.favorite_contacts:
                 print(f"{contact_id}. {star} {contact['name']}: {contact['number']} - {contact['email']}")
         return
 
+    def validar_email(self, email):
+        """
+        Validate the email format.
+
+        Args:
+            email (str): The email address to validate.
+
+        Returns:
+            bool: True if the email is valid, False otherwise.
+        """
+        padrao = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(padrao, email)
+
 
 agenda = ContactAgenda()
-
 
 while True:
     try:
@@ -189,11 +200,16 @@ while True:
                 try:
                     number = int(input("Digite o número do contato: "))
                     break
-                except Exception:
+                except ValueError:
                     print("Número inválido, tente novamente!")
 
-            email = input("Digite o e-mail do contato: ")
-            agenda.add_contact(name, number, email)
+            while True:
+                email = input("Digite o e-mail do contato: ")
+                if agenda.validar_email(email):
+                    break
+                else:
+                    print("E-mail inválido, tente novamente!")
+            agenda.add_contact(name, number, email)     
 
         elif option == 2:
             agenda.display_contacts()
