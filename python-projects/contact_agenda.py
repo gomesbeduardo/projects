@@ -230,4 +230,4 @@ while True:
         else:
             print("Opção inválida!")
     except:
-        print("Erro, tente novamente")
+        print("Entrada inválida, tente novamente")
