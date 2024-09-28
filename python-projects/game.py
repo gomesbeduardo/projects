@@ -67,24 +67,28 @@ class Game:
             print("\nCharacter Details:")
             print(self.hero.display_details())
             print(self.enemy.display_details())
-
             input("Press Enter to attack! ")
             choice = None
-        while choice not in [1, 2]:
+            while choice not in [1, 2]:
+                print("Entrou aqui")
                 try:
                     choice = int(input("Choose (1 - Normal Attack, 2 - Special Attack): "))
                     if choice not in [1, 2]:
                         raise ValueError("Invalid choice!")
                 except ValueError as e:
                     print(f"Error: {e}. Please enter 1 or 2.")
+            if choice == 1:
+                self.hero.attack(self.enemy)
+            elif choice == 2:
+                self.hero.special_attack(self.enemy)    
             
-        if self.enemy.get_health() > 0:
-            self.enemy.attack(self.hero)
-        
-        if self.hero.get_health() > 0:
-            print("\nVICTORY")
-        else:
-            print("\nDEFEAT")
+            if self.enemy.get_health() > 0:
+                self.enemy.attack(self.hero)
+            
+            if self.hero.get_health() > 0:
+                print("\nVICTORY")
+            else:
+                print("\nDEFEAT")
 
 game = Game()
 game.start_battle()
