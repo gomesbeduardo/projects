@@ -85,10 +85,12 @@ class Game:
             if self.enemy.get_health() > 0:
                 self.enemy.attack(self.hero)
             
-            if self.hero.get_health() > 0:
-                print("\nVICTORY")
-            else:
-                print("\nDEFEAT")
+        if self.hero.get_health() > 0:
+            print("\nVICTORY")
+            print(self.enemy.display_details())
+        else:
+            print("\nDEFEAT")
+            print(self.hero.display_details())
 
 game = Game()
 game.start_battle()
